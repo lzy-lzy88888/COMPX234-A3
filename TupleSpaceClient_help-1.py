@@ -86,7 +86,10 @@ def main():
             # - Send:    sock.sendall(message.encode())
             # - Receive: first read 3 bytes to get the response size (like the server does).
             #            Then read the remaining (size - 3) bytes to get the response body.
-
+            sock.sendall(message.encode())
+            Response=sock.recv(3)
+            response_size = int(Response.decode())
+            response_buffer = sock.recv(response_size - 3)
 
             response = response_buffer.decode().strip()
             print(f"{line}: {response}")
@@ -96,6 +99,7 @@ def main():
         sys.exit(1)
     finally:
         # TASK 4: Close the socket when done (already called for you — explain why
+        #Close the socket can release the port resources
         # finally: is the right place to do this even if an error occurs above).
         sock.close()
 
