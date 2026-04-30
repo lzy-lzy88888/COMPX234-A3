@@ -2,6 +2,14 @@ import socket
 import sys
 import os
 
+def receive_n(sock, num_bytes):
+    data = b""
+    while len(data) < num_bytes:
+        chunk = sock.recv(num_bytes - len(data))
+        if not chunk:
+            raise RuntimeError("Connection closed")
+        data += chunk
+    return data
 def main():
     if len(sys.argv) != 4:
         print("Usage: python tuple_space_client.py <server-hostname> <server-port> <input-file>")
@@ -9,6 +17,9 @@ def main():
 
     hostname = sys.argv[1]
     port = int(sys.argv[2])
+    if not (50000 <= port <= 59999):
+        print("Error: port must be between 50000 and 59999")
+        sys.exit(1)
     input_file_path = sys.argv[3]
 
     if not os.path.exists(input_file_path):
@@ -48,22 +59,24 @@ def main():
                     print(f"{line}: ERR Invalid command")
                     continue
                 key = parts[1]
-                total_len= len(key) + 6
+                msg = f" R {key}"
+                total_len= len(msg) + 6
                 if total_len > 999 :
                     print(f"{line}: ERR Message too long")
                     continue
-                message = f"{total_len:03d} R {key}"
+                message = f"{total_len:03d} R {msg}"
 
             elif cmd == "GET":
                 if len(parts) < 2:
                     print(f"{line}: ERR Invalid command")
                     continue
                 key = parts[1]
-                total_len = len(key) + 6
+                msg = f" G {key}"
+                total_len = len(msg) + 6
                 if total_len > 999 :
                     print(f"{line}: ERR Message too long")
                     continue
-                message = f"{total_len:03d} G {key}"
+                message = f"{total_len:03d} G {msg}"
 
             elif cmd == "PUT":
                 if len(parts) < 3:
@@ -71,11 +84,12 @@ def main():
                     continue
                 key = parts[1]
                 value = parts[2]
-                total_len = len(key) + 7 + len(value)
+                msg = f" P {key} {value}"
+                total_len = len(msg)
                 if total_len> 999 or len(f"{key} {value}") > 970:
                     print(f"{line}: ERR Message too long")
                     continue
-                message = f"{total_len:03d} P {key}{value}"
+                message = f"{total_len:03d} P {msg}"
             else:
                 print(f"{line}: ERR Unknown command")
                 continue
