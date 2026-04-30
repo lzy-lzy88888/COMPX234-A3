@@ -35,6 +35,7 @@ def main():
             cmd = parts[0]
             message = ""
 
+            
             # TASK 2: Build the protocol message string to send to the server.
             # Format:  "NNN X key"        for READ / GET
             #          "NNN P key value"   for PUT
@@ -42,7 +43,44 @@ def main():
             # X is "R" for READ and "G" for GET.
             # Hint: for READ/GET, size = 6 + len(key). For PUT, size = 7 + len(key) + len(value).
             # Reject lines with invalid format or key+" "+value > 970 chars.
+            if cmd == "READ":
+                if len(parts) < 2:
+                    print(f"{line}: ERR Invalid command")
+                    continue
+                key = parts[1]
+                total_len= len(key) + 6
+                if total_len > 999 :
+                    print(f"{line}: ERR Message too long")
+                    continue
+                message = f"{total_len:03d} R {key}"
 
+            elif cmd == "GET":
+                if len(parts) < 2:
+                    print(f"{line}: ERR Invalid command")
+                    continue
+                key = parts[1]
+                total_len = len(key) + 6
+                if total_len > 999 :
+                    print(f"{line}: ERR Message too long")
+                    continue
+                message = f"{total_len:03d} G {key}"
+
+            elif cmd == "PUT":
+                if len(parts) < 3:
+                    print(f"{line}: ERR Invalid command")
+                    continue
+                key = parts[1]
+                value = parts[2]
+                total_len = len(key) + 7 + len(value)
+                if total_len> 999 or len(f"{key} {value}") > 970:
+                    print(f"{line}: ERR Message too long")
+                    continue
+                message = f"{total_len:03d} P {key}{value}"
+            else:
+                print(f"{line}: ERR Unknown command")
+                continue
+
+            
 
             # TASK 3: Send the message to the server, then receive the response.
             # - Send:    sock.sendall(message.encode())
