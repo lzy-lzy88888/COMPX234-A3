@@ -166,6 +166,9 @@ def main():
         sys.exit(1)
 
     port = int(sys.argv[1])
+    if not (50000 <= port <= 59999):
+        print("Error: port must be between 50000 and 59999")
+        sys.exit(1)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind(("", port))
     server_socket.listen(5)
