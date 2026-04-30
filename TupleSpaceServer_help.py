@@ -75,7 +75,7 @@ def handle_client(client_socket):
             # TASK 1: Read the first 3 bytes to get the message size, then read
             # the remaining (size - 3) bytes and decode to a string.
             # Hint: use receive_n(). If nothing arrives, client disconnected — break.
-            messageSize=int(receive_n(client_socket,3).decode)
+            messageSize=int(receive_n(client_socket,3).decode())
             message_buffer = receive_n(client_socket, messageSize - 3).decode()
 
             # Handle the request
@@ -142,7 +142,6 @@ def handle_request(message):
                 increment_stat("error_count")
                 return "ERR Invalid PUT"
             value = parts[2]
-            # TASK 5: PUT — add (key, value) only if key does not already exist.
             # Validate: len(value) <= 999 and len(key + " " + value) <= 970.
             # Return "OK (<key>, <value>) added" or "ERR <key> already exists".
             increment_stat("put_count")
