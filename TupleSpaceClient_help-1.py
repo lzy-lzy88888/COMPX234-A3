@@ -103,7 +103,7 @@ def main():
             sock.sendall(message.encode())
             Response=sock.recv(3)
             response_size = int(Response.decode())
-            response_buffer = sock.recv(response_size - 3)
+            response_buffer = receive_n(sock, response_size - 3)
 
             response = response_buffer.decode().strip()
             print(f"{line}: {response}")
